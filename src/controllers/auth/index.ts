@@ -16,10 +16,14 @@ async function authRegister(req: Request, res: Response) {
                 phone_number: number
             }
         });
+        
+        if (isRegistered) {
+            let token = generateToken(isRegistered);
+            return res.status(200).json({
+                "message": "User logged in",
+                user: isRegistered,
+                token
 
-        if(isRegistered) {
-            res.status(200).json({
-                "meaage": "User already registered. Please try login in!",
             })
         }
         const user = await prisma.user.create({
@@ -45,7 +49,7 @@ async function authRegister(req: Request, res: Response) {
 }
 
 async function getAllUsers(req: Request, res: Response) {
-    const {userId} = req.body;
+    const { userId } = req.body;
 
     const users = await prisma.user.findMany({
         where: {
@@ -56,11 +60,37 @@ async function getAllUsers(req: Request, res: Response) {
     })
 
     res.status(200).json({
-        "message" : "wokring on it",
+        "message": "wokring on it",
         users
     })
 
 }
 
+async function getFollowing(req: Request, res: Response) {
+    try {
+        const { userId } = req.body;
 
-export { authRegister, getAllUsers };
+        const followingUsers = await prisma.follow.findMany({
+            where: {
+                followerId: userId
+            },
+            include: {
+                following: true
+            }
+        });
+
+        res.status(200).json({
+            message: "list of following users",
+            followingUsers
+        })
+    } catch (error) {
+        res.json(500).json({
+            message: "Internal Server Error, getFollowing",
+            error
+        })
+    }
+
+}
+
+
+export { authRegister, getAllUsers, getFollowing };

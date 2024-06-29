@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAllUsers = exports.authRegister = void 0;
+exports.getFollowing = exports.getAllUsers = exports.authRegister = void 0;
 require("dotenv/config");
 const client_1 = require("@prisma/client");
 const jwtHandler_1 = require("../../api/auth/jwtHandler");
@@ -24,8 +24,11 @@ function authRegister(req, res) {
                 }
             });
             if (isRegistered) {
-                res.status(200).json({
-                    "meaage": "User already registered. Please try login in!",
+                let token = (0, jwtHandler_1.generateToken)(isRegistered);
+                return res.status(200).json({
+                    "message": "User logged in",
+                    user: isRegistered,
+                    token
                 });
             }
             const user = yield prisma.user.create({
@@ -67,3 +70,29 @@ function getAllUsers(req, res) {
     });
 }
 exports.getAllUsers = getAllUsers;
+function getFollowing(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const { userId } = req.body;
+            const followingUsers = yield prisma.follow.findMany({
+                where: {
+                    followerId: userId
+                },
+                include: {
+                    following: true
+                }
+            });
+            res.status(200).json({
+                message: "list of following users",
+                followingUsers
+            });
+        }
+        catch (error) {
+            res.json(500).json({
+                message: "Internal Server Error, getFollowing",
+                error
+            });
+        }
+    });
+}
+exports.getFollowing = getFollowing;

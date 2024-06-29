@@ -9,4 +9,5 @@ const authMiddlewares_1 = require("../../middlewares/authMiddlewares");
 const router = express_1.default.Router();
 router.post("/register", auth_1.authRegister);
 router.get("/getusers", authMiddlewares_1.authenticateUser, auth_1.getAllUsers);
+router.get("/getfollowing", authMiddlewares_1.authenticateUser, auth_1.getFollowing);
 exports.default = router;
