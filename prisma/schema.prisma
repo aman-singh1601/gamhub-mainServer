@@ -18,8 +18,12 @@ model User {
   phone_number String   @unique
   name         String?
   bio          String?
+
   following    Follow[] @relation("Following")
   followedBy   Follow[] @relation("FollowedBy")
+
+  Blocking     Block[]  @relation("Blocking")
+  BlockedBy    Block[]  @relation("BlockedBy")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -37,4 +41,17 @@ model Follow {
   updatedAt DateTime @updatedAt
 
   @@unique([followerId, followingId])
+}
+
+model Block {
+  id     String   @id  @default(uuid())
+  blockerId    String
+  blockedId    String
+
+  blocker     User  @relation(name: "Blocking", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked     User  @relation(name: "BlockedBy", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@unique([blockedId, blockerId])
+  @@index([blockedId])
+  @@index([blockerId])
 }

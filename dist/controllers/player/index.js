@@ -28,10 +28,17 @@ function getPlayerProfile(req, res) {
                     followingId: id
                 }
             });
+            const isBlocked = yield prisma.block.findFirst({
+                where: {
+                    blockerId: userId,
+                    blockedId: id
+                }
+            });
             res.status(200).json({
                 message: "Player Followed",
                 player,
-                isFollowing: !!isFollowing
+                isFollowing: !!isFollowing,
+                isBlocked: !!isBlocked
             });
         }
         catch (error) {
@@ -50,11 +57,14 @@ function followPlayer(req, res) {
                 data: {
                     followerId: userId,
                     followingId: id
+                },
+                include: {
+                    following: true
                 }
             });
             res.status(200).json({
                 message: "Player Followed",
-                isFollowing: true
+                followData
             });
         }
         catch (error) {
@@ -79,11 +89,14 @@ function unfollowPlayer(req, res) {
             const unfollowedData = yield prisma.follow.delete({
                 where: {
                     id: isFollowing.id
+                },
+                include: {
+                    following: true
                 }
             });
             return res.status(200).json({
                 message: "Player Unfollowed",
-                isFollowing: false
+                unfollowedData
             });
         }
         catch (error) {
