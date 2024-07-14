@@ -25,5 +25,7 @@ nms.on('postPublish', (id, StreamPath, args) => {
     console.log("id: ", id);
     console.log("stream Path: ", StreamPath);
     console.log("args: ", JSON.stringify(args));
+    const streamKey = StreamPath.split('/').pop();
+    console.log("streamKey: ", streamKey);
 });
 //done Publish  --> when stream ends
