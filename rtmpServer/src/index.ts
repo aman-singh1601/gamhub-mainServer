@@ -1,6 +1,8 @@
 import NodeMediaServer from 'node-media-server';
 import { NodeMediaServerConfig } from './types/rtmpTypes';
 
+import { RedisManager } from './RedisManager';
+
 
 
 const config: NodeMediaServerConfig = {
@@ -23,10 +25,13 @@ nms.run();
 
 //post Publish --> when stream starts
 nms.on('postPublish', (id, StreamPath, args) => {
-    // console.log('[NodeEvent on postPublish]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
     console.log("id: ", id);
-    console.log("stream Path: ", StreamPath);
-    console.log("args: ", JSON.stringify(args));
+    const streamKey = StreamPath.split('/').pop();
+    console.log("streamKey: ", streamKey);
+    if(streamKey) {
+        RedisManager.getInstance().sendMessage(streamKey);
+    }
+
 });
 
 
