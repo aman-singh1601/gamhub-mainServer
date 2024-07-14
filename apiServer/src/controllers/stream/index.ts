@@ -8,7 +8,7 @@ function getRandomStreamId() {
 function generateStream(req: Request, res: Response) {
     try {
         const streamKey = getRandomStreamId();
-        const streamUrl = "rtmp://localhost:6969/abc";
+        const streamUrl = "rtmp://localhost:1935/live";
         
         res.status(200).json({
             streamKey,
