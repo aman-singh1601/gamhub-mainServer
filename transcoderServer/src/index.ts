@@ -1,5 +1,8 @@
 import { createClient } from "redis";
 import { Engine } from "./Engine/Engine";
+import { BucketManager } from "./BucketManager";
+
+
 
 
 
@@ -13,7 +16,7 @@ async function main() {
     while (true) {
         const response = await redisClient.brPop("message" as string, 0);
 
-        
+
         if (!response) {
             // console.log("no message recieved");
         } else {
@@ -25,9 +28,13 @@ async function main() {
             let outputFilename = "index.m3u8";
 
             Engine.getInstance(streamPath, outputPath, outputFilename).transcodeStreamToHls();
+          
+ 
+
+            BucketManager.getIntance(outputPath, streamKey).watchOutputh();
 
             console.log("reached....");
-            
+
         }
     }
 }
